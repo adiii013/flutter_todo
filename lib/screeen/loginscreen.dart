@@ -21,6 +21,9 @@ class _LoginScreenState extends State<LoginScreen> {
     var email = nameController.text.toString();
     var password = passwordController.text.toString();
     var er = "";
+    setState(() {
+      error = "";
+    });
     if (logSig == "Sign in") {
       try {
         final credential =
@@ -53,14 +56,12 @@ class _LoginScreenState extends State<LoginScreen> {
       error = er;
     });
     if (error == "") {
-      databaseReference.push().set({'email': email});
+      final string = email.substring(0, email.indexOf('.'));
+      databaseReference.child(string).set({'password': password});
     }
-    setState(() {
-      error = "";
-    });
 
-    DatabaseEvent event = await databaseReference.once();
-    print(event.snapshot.value);
+    // DatabaseEvent event = await databaseReference.once();
+    // print(event.snapshot.value);
   }
 
   @override
