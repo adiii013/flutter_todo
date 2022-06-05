@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -8,10 +10,58 @@ class LoginScreen extends StatefulWidget {
 }
 
 String logSig = "Login";
+String error = "";
+final databaseReference = FirebaseDatabase.instance.ref();
 
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  void loginSignin() async {
+    var email = nameController.text.toString();
+    var password = passwordController.text.toString();
+    var er = "";
+    if (logSig == "Sign in") {
+      try {
+        final credential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          er = 'The password provided is too weak.';
+        } else if (e.code == 'email-already-in-use') {
+          er = 'The account already exists for that email.';
+        }
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      try {
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          er = 'No user found for that email.';
+        } else if (e.code == 'wrong-password') {
+          er = 'Wrong password provided for that user.';
+        }
+      }
+    }
+    setState(() {
+      error = er;
+    });
+    if (error == "") {
+      databaseReference.push().set({'email': email});
+    }
+    setState(() {
+      error = "";
+    });
+
+    DatabaseEvent event = await databaseReference.once();
+    print(event.snapshot.value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Padding(
           padding: const EdgeInsets.all(10),
           child: ListView(
-            children: <Widget>[
+            children: [
               Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.all(10),
@@ -50,7 +100,6 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: TextField(
-                  obscureText: true,
                   controller: passwordController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -66,16 +115,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: ElevatedButton(
                     child: Text(logSig.toString()),
-                    onPressed: () {},
+                    onPressed: loginSignin,
                   )),
               Row(
-                children: <Widget>[
-                  Text(
-                    (logSig == 'Sign in') ? 'Does not have account?' : 'Already have a account'
-                  ),
+                children: [
+                  Text((logSig == 'Sign in')
+                      ? 'Already have a account'
+                      : 'Does not have account?'),
                   TextButton(
-                    child: const Text(
-                      'Sign in',
+                    child: Text(
+                      (logSig == 'Sign in') ? 'Login' : 'Sign in',
                       style: TextStyle(fontSize: 20),
                     ),
                     onPressed: () {
@@ -91,6 +140,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
                 mainAxisAlignment: MainAxisAlignment.center,
               ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                child: Center(
+                  child: Text(
+                    error,
+                    style: TextStyle(color: Colors.red, fontSize: 18),
+                  ),
+                ),
+              )
             ],
           )),
     );
