@@ -55,10 +55,10 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       error = er;
     });
-    if (error == "") {
-      final string = email.substring(0, email.indexOf('.'));
-      databaseReference.child(string).set({'password': password});
-    }
+    // if (error == "") {
+    //   final string = email.substring(0, email.indexOf('.'));
+    //   databaseReference.child('$string/data').update({'email':email});
+    // }
 
     // DatabaseEvent event = await databaseReference.once();
     // print(event.snapshot.value);
