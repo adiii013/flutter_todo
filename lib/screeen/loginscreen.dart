@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
     var password = passwordController.text.toString();
     var er = "";
     setState(() {
-      error = "";
+      error = "Loading...";
     });
     if (logSig == "Sign in") {
       try {
@@ -55,13 +55,6 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       error = er;
     });
-    // if (error == "") {
-    //   final string = email.substring(0, email.indexOf('.'));
-    //   databaseReference.child('$string/data').update({'email':email});
-    // }
-
-    // DatabaseEvent event = await databaseReference.once();
-    // print(event.snapshot.value);
   }
 
   @override
@@ -94,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: nameController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'User Name',
+                    labelText: 'Email',
                   ),
                 ),
               ),

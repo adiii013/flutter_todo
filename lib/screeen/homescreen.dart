@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var f = DateFormat.yMd().add_jm();
     String date = f.format(DateTime.now()).toString();
     dbref.child(name).push().set({'todo': task, 'date': date});
+    todo.clear();
   }
 
   @override
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.fromLTRB(10, 0, 10, 5),
+            margin: EdgeInsets.fromLTRB(20, 10, 20, 5),
             child: TextFormField(
               decoration: const InputDecoration(
                 hintText: 'Enter Todo',
@@ -52,7 +53,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           ElevatedButton(onPressed: addtodo, child: Text('Add')),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Container(
             height: MediaQuery.of(context).size.height - 300,
             child: FirebaseAnimatedList(
@@ -78,8 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
-          SizedBox(height: 20,),
-         Text("Made with ❤ by Aditya")
+          SizedBox(
+            height: 35,
+          ),
+          Text("Made with ❤ by Aditya")
         ],
       ),
     );
